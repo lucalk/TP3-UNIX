@@ -5,7 +5,7 @@
 
 - Création d'un dossier : mkdir tp03
 - Dans tp03, création du fichier analyse.sh : cat > analyse.sh puis ctrl+c
-- Modification de analyse.sh :
+- Modification de analyse.sh : nano analyse.sh
   - ```bash
     #!/bin/bash
 
@@ -27,4 +27,28 @@
     ```
 ## Exercice : vérification du nombre de paramètres
 
-- 
+- Création du fichier concat.sh : cat > concat.sh puis ctrl+c
+- Modification de concat.sh : nano concat.sh
+  - ```bash
+    #!/bin/bash
+
+    if [ $# -eq 2 ]; then
+        echo $1$2 
+    else
+        echo "Erreur, veuillez entrer SEULEMENT 2 paramètres" 
+    fi
+    ```
+- Résultat :
+  - ```bash
+    root@serveur-correction:~/tp03# ./concat.sh bonj 222
+    bonj222
+    ```
+  - ```bash
+    root@serveur-correction:~/tp03# ./concat.sh bonj 222 ujyh
+    Erreur, veuillez entrer SEULEMENT 2 paramètres
+    ```
+
+## Exercice : argument type et droits
+
+
+         
