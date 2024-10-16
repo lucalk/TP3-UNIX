@@ -51,4 +51,58 @@
 ## Exercice : argument type et droits
 
 
+
+
+```bash
+#!bin/bash
+
+if [ $# -ne 1 ]; then 
+        echo "Erreur : vous debez spécifier le chamin d'un fichier."
+        exit 1
+fi
+
+fichier="$1"
+
+if [ ! -e "$fichier" ]; then
+        echo "Le fichier $fichier n'existe pas"
+        exit 1
+fi
+
+if [ -d "$fichier" ]; then
+        echo "Le fichier $fichier est un repertoire"
+elif [ -f "$fichier" ]; then
+        if [ -s "$fichier" ]; then
+                echo "Le fichier $fichier est un fichier ordinaire non vide"
+        else
+                echo "Le fichier $fichier est un fichier ordinaire vide"
+        fi
+elif [ -L "$fichier" ]; then
+        echo "Le fichier $fichier est un lien symbolique"
+else
+        echo "Le fichier $fichier est d'un autre type"
+```
+
+```bash
+user=$(whoami)
+permission=""
+
+if [ -r "$fichier" ]; then
+        permission+="lecture"
+fi
+if [ -w "$fichier" ]; then
+        permission+="écriture"
+fi
+if [ -x "$fichier" ]; then
+        permission+="exécution"
+fi
+
+if [ -n $"permission" ]; then
+        echo "\"$fichier\" est accessible par $user en $permission."
+else 
+        echo "\"$fichier\" n'est pas accessible par $user."
+fi
+```
+
+
+
          
