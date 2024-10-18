@@ -1,7 +1,7 @@
 # TP3-UNIX
 
 
-## Exercice : paramètres
+## Exercice 1 : paramètres
 
 - Création d'un dossier : mkdir tp03
 - Dans tp03, création du fichier analyse.sh : cat > analyse.sh puis ctrl+c
@@ -25,7 +25,7 @@
     Le 3ème paramètre est ef.
     Voici la liste des paramètres : ab cd ef yz
     ```
-## Exercice : vérification du nombre de paramètres
+## Exercice 2 : vérification du nombre de paramètres
 
 - Création du fichier concat.sh : cat > concat.sh puis ctrl+c
 - Modification de concat.sh : nano concat.sh
@@ -48,16 +48,13 @@
     Erreur, veuillez entrer SEULEMENT 2 paramètres
     ```
 
-## Exercice : argument type et droits
-
-
-
+## Exercice 3 : argument type et droits
 
 ```bash
-#!bin/bash
+#!/bin/bash
 
 if [ $# -ne 1 ]; then 
-        echo "Erreur : vous debez spécifier le chamin d'un fichier."
+        echo "Erreur : vous devez spécifier le chamin d'un fichier."
         exit 1
 fi
 
@@ -80,20 +77,19 @@ elif [ -L "$fichier" ]; then
         echo "Le fichier $fichier est un lien symbolique"
 else
         echo "Le fichier $fichier est d'un autre type"
-```
+fi
 
-```bash
 user=$(whoami)
 permission=""
 
 if [ -r "$fichier" ]; then
-        permission+="lecture"
+        permission+="lecture "
 fi
 if [ -w "$fichier" ]; then
-        permission+="écriture"
+        permission+="écriture "
 fi
 if [ -x "$fichier" ]; then
-        permission+="exécution"
+        permission+="exécution "
 fi
 
 if [ -n $"permission" ]; then
@@ -101,6 +97,111 @@ if [ -n $"permission" ]; then
 else 
         echo "\"$fichier\" n'est pas accessible par $user."
 fi
+```
+
+Résultat : 
+```bash
+root@serveur-correction:~/tp03# ./test-fichier.sh analyse.sh 
+Le fichier analyse.sh est un fichier ordinaire non vide
+"analyse.sh" est accessible par root en lecture écriture exécution .
+```
+```bash
+root@serveur-correction:~# ./tp03/test-fichier.sh ./tp03/concat.sh
+Le fichier ./tp03/concat.sh est un fichier ordinaire non vide
+"./tp03/concat.sh" est accessible par root en lecture écriture exécution .
+```
+
+
+## Exercice 4 : Afficher le contenu d’un répertoire
+
+```bash
+#!/bin/bash
+
+if [ $# -ne 1 ]; thenLister les utilisateurs us
+        echo "Erreur : vous devez spécifier un repertoire"
+        exit 1
+fi
+
+if [ ! -e "$1" ]; then
+        echo "Le répertoire n'existe pas."
+        exit 1
+fi
+
+if [ ! -d "$1" ]; then
+        echo "Erreur : $repertoire n'est pas un répertoire."
+        exit 1
+fi
+
+# affiche chaque dossier du répertoire sur une ligne
+echo "#### Les dossiers" 
+ls -d "$1"/*/ | xargs -n 1  
+
+# affiche chaque fichier du répertoire sur une ligne
+echo "#### Les fichiers"
+find "$1" -type f
+```
+Résultat : 
+```bash
+root@serveur-correction:~/tp03# ./listedir.sh testQuatre
+#### Les dossiers
+testQuatre/iuheg/
+testQuatre/ofrne/
+#### Les fichiers
+testQuatre/fich.sh
+testQuatre/hir.sh
+```
+
+
+## Exercice 5 : Lister les utilisateurs
+```bash
+#!/bin/bash
+
+# -F: : Le délimiteur de champ est ':'
+# $3 > 100 : Filtre le 3e champ lorsque qu'il est supérieur a 100
+# { print $1 } : Affiche le premier champ  
+
+awk -F: '$3 > 100 { print $1 }' /etc/passwd 
+```
+
+Résultat : 
+```bash
+root@serveur-correction:~/tp03# ./userdir.sh
+nobody
+systemd-network
+systemd-timesync
+sshd
+```
+
+## Exercice 6 : Mon utilisateur existe t’il
+```bash
+#!/bin/bash
+
+if [ $# -ne 2 ]; then
+        echo "Erreur : Il faut 2 paramètres."
+        exit 1
+fi
+
+user=$(awk -F: -v login="$1" -v uid="$2" '$1==login && $3==uid {print $1}' /etc/passwd)
+
+if [ -n "$user" ]; then
+        echo "$2"
+else
+        echo "rien"
+fi
+
+```
+
+Résultat : 
+
+```bash
+root@serveur-correction:~/tp03# ./userexist.sh games 5
+
+root@serveur-correction:~/tp03# ./userexist.sh sshd 1010
+rien
+root@serveur-correction:~/tp03# ./userexist.sh games 5
+5
+root@serveur-correction:~/tp03# ./userexist.sh sshd 101
+101
 ```
 
 
