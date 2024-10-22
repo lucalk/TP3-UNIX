@@ -1,7 +1,7 @@
 # TP3-UNIX
 
 
-## Exercice 1 : paramètres
+## Exercice 1 : Paramètres
 
 - Création d'un dossier : mkdir tp03
 - Dans tp03, création du fichier analyse.sh : cat > analyse.sh puis ctrl+c
@@ -25,7 +25,7 @@
     Le 3ème paramètre est ef.
     Voici la liste des paramètres : ab cd ef yz
     ```
-## Exercice 2 : vérification du nombre de paramètres
+## Exercice 2 : Vérification du nombre de paramètres
 
 - Création du fichier concat.sh : cat > concat.sh puis ctrl+c
 - Modification de concat.sh : nano concat.sh
@@ -48,7 +48,7 @@
     Erreur, veuillez entrer SEULEMENT 2 paramètres
     ```
 
-## Exercice 3 : argument type et droits
+## Exercice 3 : Argument type et droits
 
 - Script : 
   ```bash
@@ -294,7 +294,7 @@ Résultat :
   Le répertoire home /home/moi a été créé.
   ```
 
-## Exercice 8 :  lecture au clavier
+## Exercice 8 :  Lecture au clavier
 - Pour quitter "more" , il faut appuyer sur la touche q.
 - Pour avancer d'une ligne, il faut appuyer sur la touche entrée.
 - vfd
@@ -361,7 +361,7 @@ Résultat :
   ```
 
 
-## Exercice 9 : appreciation
+## Exercice 9 : Appreciation
 
 - Installation de bc :
   ```bash
