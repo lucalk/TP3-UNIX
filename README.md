@@ -18,7 +18,7 @@
     echo "Voici la liste des paramètres : $@"
     ```
 - Résultat :
-  - ```bash
+   ```bash
     root@serveur-correction:~/tp03# ./analyse.sh ab cd ef yz
     Bonjour, vous avez rentré 4 paramètres.
     Le nom du script est ./analyse.sh.
@@ -29,7 +29,7 @@
 
 - Création du fichier concat.sh : cat > concat.sh puis ctrl+c
 - Modification de concat.sh : nano concat.sh
-  - ```bash
+   ```bash
     #!/bin/bash
 
     if [ $# -eq 2 ]; then
@@ -50,159 +50,173 @@
 
 ## Exercice 3 : argument type et droits
 
-```bash
-#!/bin/bash
+- Script : 
+  ```bash
+  #!/bin/bash
 
-if [ $# -ne 1 ]; then 
-        echo "Erreur : vous devez spécifier le chamin d'un fichier."
-        exit 1
-fi
+  # Vérification si il y a un argument
+  if [ $# -ne 1 ]; then 
+          echo "Erreur : vous devez spécifier le chamin d'un fichier."
+          exit 1
+  fi
+  
+  fichier="$1"
 
-fichier="$1"
+  # Vérifie si le fichier existe
+  if [ ! -e "$fichier" ]; then
+          echo "Le fichier $fichier n'existe pas"
+          exit 1
+  fi
 
-if [ ! -e "$fichier" ]; then
-        echo "Le fichier $fichier n'existe pas"
-        exit 1
-fi
+  # Vérifie si le fichier est un répertoire 
+  if [ -d "$fichier" ]; then
+          echo "Le fichier $fichier est un repertoire"
+  # Vérifie si c'est un fichier ordinaire
+  elif [ -f "$fichier" ]; then
+          # Vérifie si il est vide
+          if [ -s "$fichier" ]; then
+                  echo "Le fichier $fichier est un fichier ordinaire non vide"
+          else
+                  echo "Le fichier $fichier est un fichier ordinaire vide"
+          fi
+  # Vérifie si c'est un lien 
+  elif [ -L "$fichier" ]; then
+          echo "Le fichier $fichier est un lien symbolique"
+  else
+          echo "Le fichier $fichier est d'un autre type"
+  fi
+  
+  user=$(whoami)
+  permission=""
 
-if [ -d "$fichier" ]; then
-        echo "Le fichier $fichier est un repertoire"
-elif [ -f "$fichier" ]; then
-        if [ -s "$fichier" ]; then
-                echo "Le fichier $fichier est un fichier ordinaire non vide"
-        else
-                echo "Le fichier $fichier est un fichier ordinaire vide"
-        fi
-elif [ -L "$fichier" ]; then
-        echo "Le fichier $fichier est un lien symbolique"
-else
-        echo "Le fichier $fichier est d'un autre type"
-fi
-
-user=$(whoami)
-permission=""
-
-if [ -r "$fichier" ]; then
-        permission+="lecture "
-fi
-if [ -w "$fichier" ]; then
-        permission+="écriture "
-fi
-if [ -x "$fichier" ]; then
-        permission+="exécution "
-fi
-
-if [ -n $"permission" ]; then
-        echo "\"$fichier\" est accessible par $user en $permission."
-else 
-        echo "\"$fichier\" n'est pas accessible par $user."
-fi
-```
+  # Vérifie la permission de lecture
+  if [ -r "$fichier" ]; then
+          permission+="lecture "
+  fi
+  # Vérifie la permission d'écrire
+  if [ -w "$fichier" ]; then
+          permission+="écriture "
+  fi
+  # Vérifie la permission d'exécution
+  if [ -x "$fichier" ]; then
+          permission+="exécution "
+  fi
+  
+  if [ -n $"permission" ]; then
+          echo "\"$fichier\" est accessible par $user en $permission."
+  else 
+          echo "\"$fichier\" n'est pas accessible par $user."
+  fi
+  ```
 
 Résultat : 
-```bash
-root@serveur-correction:~/tp03# ./test-fichier.sh analyse.sh 
-Le fichier analyse.sh est un fichier ordinaire non vide
-"analyse.sh" est accessible par root en lecture écriture exécution .
-```
-```bash
-root@serveur-correction:~# ./tp03/test-fichier.sh ./tp03/concat.sh
-Le fichier ./tp03/concat.sh est un fichier ordinaire non vide
-"./tp03/concat.sh" est accessible par root en lecture écriture exécution .
-```
+  ```bash
+  root@serveur-correction:~/tp03# ./test-fichier.sh analyse.sh 
+  Le fichier analyse.sh est un fichier ordinaire non vide
+  "analyse.sh" est accessible par root en lecture écriture exécution .
+  ```
+  ```bash
+  root@serveur-correction:~# ./tp03/test-fichier.sh ./tp03/concat.sh
+  Le fichier ./tp03/concat.sh est un fichier ordinaire non vide
+  "./tp03/concat.sh" est accessible par root en lecture écriture exécution .
+  ```
 
 
 ## Exercice 4 : Afficher le contenu d’un répertoire
+- Script : 
+  ```bash
+  #!/bin/bash
 
-```bash
-#!/bin/bash
+  # Vérification si il y a un argument 
+  if [ $# -ne 1 ]; thenLister les utilisateurs us
+          echo "Erreur : vous devez spécifier un repertoire"
+          exit 1
+  fi
 
-if [ $# -ne 1 ]; thenLister les utilisateurs us
-        echo "Erreur : vous devez spécifier un repertoire"
-        exit 1
-fi
+  # Vérifie si le répertoire existe
+  if [ ! -e "$1" ]; then
+          echo "Le répertoire n'existe pas."
+          exit 1
+  fi
 
-if [ ! -e "$1" ]; then
-        echo "Le répertoire n'existe pas."
-        exit 1
-fi
-
-if [ ! -d "$1" ]; then
-        echo "Erreur : $repertoire n'est pas un répertoire."
-        exit 1
-fi
-
-# affiche chaque dossier du répertoire sur une ligne
-echo "#### Les dossiers" 
-ls -d "$1"/*/ | xargs -n 1  
-
-# affiche chaque fichier du répertoire sur une ligne
-echo "#### Les fichiers"
-find "$1" -type f
-```
-Résultat : 
-```bash
-root@serveur-correction:~/tp03# ./listedir.sh testQuatre
-#### Les dossiers
-testQuatre/iuheg/
-testQuatre/ofrne/
-#### Les fichiers
-testQuatre/fich.sh
-testQuatre/hir.sh
-```
+  # Vérifie si l'argument passé est un répertoire
+  if [ ! -d "$1" ]; then
+          echo "Erreur : $repertoire n'est pas un répertoire."
+          exit 1
+  fi
+  
+  # affiche chaque dossier du répertoire sur une ligne
+  echo "#### Les dossiers" 
+  ls -d "$1"/*/ | xargs -n 1  
+  
+  # affiche chaque fichier du répertoire sur une ligne
+  echo "#### Les fichiers"
+  find "$1" -type f
+  ```
+- Résultat : 
+  ```bash
+  root@serveur-correction:~/tp03# ./listedir.sh testQuatre
+  #### Les dossiers
+  testQuatre/iuheg/
+  testQuatre/ofrne/
+  #### Les fichiers
+  testQuatre/fich.sh
+  testQuatre/hir.sh
+  ```
 
 
 ## Exercice 5 : Lister les utilisateurs
-```bash
-#!/bin/bash
+- Script : 
+  ```bash
+  #!/bin/bash
+  
+  # -F: : Le délimiteur de champ est ':'
+  # $3 > 100 : Filtre le 3e champ lorsque qu'il est supérieur a 100
+  # { print $1 } : Affiche le premier champ  
+  
+  awk -F: '$3 > 100 { print $1 }' /etc/passwd 
+  ```
+- Résultat : 
+  ```bash
+  root@serveur-correction:~/tp03# ./userdir.sh
+  nobody
+  systemd-network
+  systemd-timesync
+  sshd
+  ```
 
-# -F: : Le délimiteur de champ est ':'
-# $3 > 100 : Filtre le 3e champ lorsque qu'il est supérieur a 100
-# { print $1 } : Affiche le premier champ  
-
-awk -F: '$3 > 100 { print $1 }' /etc/passwd 
-```
-
-Résultat : 
-```bash
-root@serveur-correction:~/tp03# ./userdir.sh
-nobody
-systemd-network
-systemd-timesync
-sshd
-```
 
 ## Exercice 6 : Mon utilisateur existe t’il
-```bash
-#!/bin/bash
+- Script :
+  ```bash
+  #!/bin/bash
 
-if [ $# -ne 2 ]; then
-        echo "Erreur : Il faut 2 paramètres."
-        exit 1
-fi
+  # Verifie si il a y 2 paramètres
+  if [ $# -ne 2 ]; then
+          echo "Erreur : Il faut 2 paramètres."
+          exit 1
+  fi
 
-user=$(awk -F: -v login="$1" -v uid="$2" '$1==login && $3==uid {print $1}' /etc/passwd)
-
-if [ -n "$user" ]; then
-        echo "$2"
-else
-        echo "rien"
-fi
-
-```
-
+  # Recherche si l'utilisateur existe dans /etc/passwd avec les paramètres
+  user=$(awk -F: -v login="$1" -v uid="$2" '$1==login && $3==uid {print $1}' /etc/passwd)
+  
+  if [ -n "$user" ]; then
+          echo "$2"
+  else
+          echo "rien"
+  fi
+  ```
 Résultat : 
-
-```bash
-root@serveur-correction:~/tp03# ./userexist.sh games 5
-
-root@serveur-correction:~/tp03# ./userexist.sh sshd 1010
-rien
-root@serveur-correction:~/tp03# ./userexist.sh games 5
-5
-root@serveur-correction:~/tp03# ./userexist.sh sshd 101
-101
-```
+  ```bash
+  root@serveur-correction:~/tp03# ./userexist.sh games 5
+  
+  root@serveur-correction:~/tp03# ./userexist.sh sshd 1010
+  rien
+  root@serveur-correction:~/tp03# ./userexist.sh games 5
+  5
+  root@serveur-correction:~/tp03# ./userexist.sh sshd 101
+  101
+  ```
 
 
 ## Exercice 7 : Création utilisateur
@@ -280,8 +294,7 @@ root@serveur-correction:~/tp03# ./userexist.sh sshd 101
   Le répertoire home /home/moi a été créé.
   ```
 
-## Exercice 8 : 
-
+## Exercice 8 :  lecture au clavier
 - Pour quitter "more" , il faut appuyer sur la touche q.
 - Pour avancer d'une ligne, il faut appuyer sur la touche entrée.
 - vfd
