@@ -205,5 +205,202 @@ root@serveur-correction:~/tp03# ./userexist.sh sshd 101
 ```
 
 
+## Exercice 7 : Création utilisateur
+- Script :
+  ```bash
+  #!/bin/bash
+  
+  #Vérification si l'utilisateur est root
+  if [ "$USER" != "root" ]; then
+      echo "Vous devez être root pour exécuter ce script."
+      exit 1
+  fi
+
+  # Vérification si l'utilisateur existe déjà
+  function check_user_existence {
+      local username=$1
+      if id "$username" &>/dev/null; then
+          echo "L'utilisateur $username existe déjà."
+          exit 1
+      fi
+  }
+
+  # Vérification si un répertoire home existe déjà
+  function check_home_directory_existence {
+      local home_dir=$1
+      if [ -d "$home_dir" ]; then
+          echo "Le répertoire $home_dir existe déjà."
+          exit 1
+      fi
+  }
+
+  # Infos de l'utilisateur
+  read -p "Entrez le login de l'utilisateur: " login
+  read -p "Entrez le nom de famille de l'utilisateur: " nom
+  read -p "Entrez le prénom de l'utilisateur: " prenom
+  read -p "Entrez l'UID (identifiant utilisateur): " uid
+  read -p "Entrez le GID (identifiant du groupe): " gid
+  read -p "Entrez un commentaire (ex. Nom complet, rôle...): " commenta>
+
+  # Vérification si l'utilisateur existe déjà
+  check_user_existence "$login"
+
+  # Définition du répertoire home de l'utilisateur
+  home_dir="/home/$login"
+
+  # Vérification si le répertoire home existe déjà
+  check_home_directory_existence "$home_dir"
+
+  # Création de l'utilisateur avec les infos
+  useradd -m -d "$home_dir" -u "$uid" -g "$gid" -c "$prenom $nom, $comm>
+
+  # Vérifier si la commande useradd s'est exécutée correctement
+  if [ $? -eq 0 ]; then
+      echo "L'utilisateur $login a été créé avec succès."
+  else
+      echo "Échec de la création de l'utilisateur."
+      exit 1
+  fi
+
+  # Succès
+  echo "Le répertoire home $home_dir a été créé."
+  ```
+  
+- Résultat :
+  ```bash
+  root@serveur1:~/tp03# ./createuser.sh
+  Entrez le login de l'utilisateur: moi
+  Entrez le nom de famille de l'utilisateur: k
+  Entrez le prénom de l'utilisateur: l
+  Entrez l'UID (identifiant utilisateur): 243
+  Entrez le GID (identifiant du groupe): 0013
+  Entrez un commentaire (ex. Nom complet, rôle...): chef
+  useradd warning: moi's uid 243 outside of the UID_MIN 1000 and UID_MAX 60000 range.
+  L'utilisateur moi a été créé avec succès.
+  Le répertoire home /home/moi a été créé.
+  ```
+
+## Exercice 8 : 
+
+- Pour quitter "more" , il faut appuyer sur la touche q.
+- Pour avancer d'une ligne, il faut appuyer sur la touche entrée.
+- vfd
+- vefd
+- Script :
+  ```bash
+  #!/bin/bash
+
+  # Vérification si un répertoire a été fourni
+  if [ -z "$1" ]; then
+      echo "Veuillez spécifier un répertoire."
+      exit 1
+  fi
+
+  # Vérification si le répertoire existe
+  if [ ! -d "$1" ]; then
+      echo "Le répertoire '$1' n'existe pas."
+      exit 1
+  fi
+
+  # Boucle sur chaque fichier txt dans le répertoire
+  for fichier in "$1"/*.txt; do
+      # Vérifier si le fichier existe (au cas où il n'y aurait pas de fichiers .txt)
+      if [ ! -e "$fichier" ]; then
+          echo "Aucun fichier texte trouvé dans le répertoire '$1'."
+          exit 0
+      fi
+
+      # Utilise la commande file pour vérifier si c'est un fichier txt
+      if file "$fichier" | grep -q "text"; then
+          echo -n "Voulez-vous visualiser le fichier '$fichier' ? (o/n) "
+          read reponse
+          if [[ "$reponse" =~ ^[oO]$ ]]; then
+              more "$fichier"
+          fi
+      fi
+  done
+  ```
+
+- test.txt :
+  ```bash
+  
+
+  Bonjour
+
+
+  Au Rien
+
+  Bonsoir
+  ```
+  
+- Résultat :
+  ```bash
+  root@serveur1:~# ./tp03/lecture.sh tp03
+  Voulez-vous visualiser le fichier 'tp03/test.txt' ? (o/n) o
+
+
+  Bonjour
+
+
+  Au Rien
+
+  Bonsoir
+  ```
+
+
+## Exercice 9 : appreciation
+
+- Installation de bc :
+  ```bash
+  root@serveur1:~/tp03# apt install bc
+  ```
+- Script :
+  ```bash
+  #!/bin/bash
+  while true; do
+      # Demander à l'utilisateur de saisir une note ou de quitter
+      read -p "Entrez une note (ou 'q' pour quitter) : " input
+
+      # Vérification si l'utilisateur veut quitter
+      if [[ "$input" == "q" ]]; then
+          echo "Au revoir !"
+          exit 0
+      fi
+
+      # Vérification si l'entrée est un nombre
+      if ! [[ "$input" =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
+          echo "Veuillez entrer une note valide ou 'q' pour quitter."
+          continue
+      fi
+
+      # Comparaison des notes et affiche le bon message
+      if (( $(echo "$input >= 16" | bc -l) )); then
+          echo "Très bien"
+      elif (( $(echo "$input >= 14" | bc -l) )); then
+          echo "Bien"
+      elif (( $(echo "$input >= 12" | bc -l) )); then
+          echo "Assez bien"
+      elif (( $(echo "$input >= 10" | bc -l) )); then
+          echo "Moyen"
+      else
+          echo "Insuffisant"
+      fi
+  done
+  ```
+- Résultat :
+  ```bash
+  root@serveur1:~/tp03# ./note.sh
+  Entrez une note (ou 'q' pour quitter) : 18
+  Très bien
+  Entrez une note (ou 'q' pour quitter) : 13
+  Assez bien
+  Entrez une note (ou 'q' pour quitter) : q
+  Au revoir !
+  ```
+  
+
+  
+
+
 
          
